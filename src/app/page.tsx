@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+import ProductCard from "@/components/products/ProductCard";
 
 export default async function Home() {
   // Debugging: Log environment variables on the server
@@ -23,29 +24,27 @@ export default async function Home() {
 
       <section>
         <h3 className="text-2xl font-semibold mb-6">BEST SELLERS</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {/* Placeholder for product items */}
-          <div className="border rounded-lg p-4">
-            <div className="bg-gray-200 h-60 mb-4"></div>
-            <h4 className="font-semibold">상품명</h4>
-            <p>가격</p>
+        
+        {error && (
+          <p className="text-center text-red-500">
+            상품을 불러오는 중 오류가 발생했습니다.
+          </p>
+        )}
+
+        {!error && (!products || products.length === 0) && (
+          <p className="text-center text-gray-500">
+            등록된 상품이 없습니다.
+          </p>
+        )}
+
+        {products && products.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {products.map((product) => (
+              // @ts-ignore
+              <ProductCard key={product.id} product={product} />
+            ))}
           </div>
-          <div className="border rounded-lg p-4">
-            <div className="bg-gray-200 h-60 mb-4"></div>
-            <h4 className="font-semibold">상품명</h4>
-            <p>가격</p>
-          </div>
-          <div className="border rounded-lg p-4">
-            <div className="bg-gray-200 h-60 mb-4"></div>
-            <h4 className="font-semibold">상품명</h4>
-            <p>가격</p>
-          </div>
-          <div className="border rounded-lg p-4">
-            <div className="bg-gray-200 h-60 mb-4"></div>
-            <h4 className="font-semibold">상품명</h4>
-            <p>가격</p>
-          </div>
-        </div>
+        )}
       </section>
     </div>
   );
