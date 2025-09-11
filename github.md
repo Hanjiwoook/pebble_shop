@@ -1,113 +1,202 @@
- 물론입니다. GitHub 협업 워크플로우를 아주 자세하게, 실제 상황처럼 단계별로 설명해 드릴게요.
+ ### 1부: 당신이 할 일 (저장소 주인)
+
+  먼저 저장소 주인인 당신이 친구를 프로젝트에 초대해야 합니다.
 
 
-  시나리오: 당신과 친구가 pebble-shop 프로젝트를 함께 만들고 있습니다. 당신의 역할은 웹사이트 상단에 새로운 헤더(Header)를 만드는 
-  것입니다.
-
-  ---
-
-  ### 1단계: 작업 시작 전, 최신 코드 상태 맞추기
+  1. GitHub 저장소 설정으로 이동하기
 
 
-  가장 먼저, 다른 사람이 작업해서 main 브랜치에 합쳐놓은 최신 코드가 내 컴퓨터에 반영되어 있어야 합니다. 이걸 '동기화'라고 합니다.
-
-  1. 내 컴퓨터에서 `main` 브랜치로 이동합니다.
-  main은 프로젝트의 '원본'이자 가장 중심이 되는 브랜치입니다.
-
-
-  `bash
-  git checkout main
-  `
-  > 명령어 의미: checkout은 특정 브랜치로 '이동'하겠다는 뜻입니다.
-  > 결과: 터미널에 Switched to branch 'main' 같은 메시지가 표시됩니다.
-
-  2. GitHub 저장소(`origin`)에서 `main` 브랜치의 최신 내용을 내 컴퓨터로 가져옵니다 (`pull`).
-
-
-  `bash
-  git pull origin main
-  `
-  > 명령어 의미: pull은 '가져와서 합친다'는 뜻입니다. origin은 GitHub에 있는 원격 저장소를 가리키는 별명입니다. 즉, "GitHub에 있는 main
-  브랜치의 최신 내용을 내 컴퓨터의 main 브랜치로 가져와 줘" 라는 의미입니다.
-  > 결과: 최신 변경사항이 있다면 다운로드되고, Already up to date. 라는 메시지가 나오면 이미 최신 상태라는 뜻입니다.
+   - 웹 브라우저에서 당신의 GitHub 저장소 페이지로 접속합니다.
+   - Settings 페이지에 들어오면 왼쪽 편에 여러 메뉴가 보입니다. 여기서 `Collaborators`를 클릭하세요.
+   - Collaborators 페이지 중앙에 있는 초록색 `[Add people]` 버튼을 클릭합니다.
+  이제 당신이 할 일은 끝났습니다. 친구에게 초대를 보냈다고 알려주세요.
 
   ---
 
+  ### 2부: 친구가 할 일 (초대받은 공동 작업자)
 
-  2단계: 나만의 작업 공간(새로운 브랜치) 만들기
-  1. '헤더' 기능을 위한 새로운 브랜치를 만들고, 그 브랜치로 바로 이동합니다.
-  브랜치 이름은 feature/ 나 fix/ 같은 접두사를 붙여주면 좋습니다.
+  이제 친구가 초대를 수락하고 프로젝트를 자신의 컴퓨터에 설정할 차례입니다.
 
+  1. 공동 작업자 초대 수락하기
+
+  -   친구는 GitHub에 로그인하면 알림을 받게 됩니다. 또는 GitHub에서 보낸 초대 이메일을 확인할 수도 있습니다.
+  -   이메일이나 알림에 있는 `Accept invitation` (초대 수락) 버튼을 클릭합니다.
+
+
+  2. GitHub 저장소 복제하기 (Clone)
+
+
+   - 중요: 친구는 Fork(포크) 버튼을 누르면 안 됩니다.
+      `bash
+      git clone https://github.com/Hanjiwoook/pebble_shop.git
+      `
+  -   이 명령어를 실행하면 pebble-shop이라는 폴더가 생기고 그 안에 프로젝트 코드가 모두 다운로드됩니다.
+
+  3. 프로젝트 실행 환경 설정하기
+
+  -   복제된 프로젝트 폴더로 이동합니다.
+      `bash
+      cd pebble-shop
+      `
+  -   필수 패키지를 설치합니다.
 
   `bash
-  git checkout -b feature/header
+      npm install
+      `
+  -   `.env.local` 파일을 생성하고 Supabase 접속 정보를 채워 넣습니다. (이 파일은 Git으로 공유되지 않으므로 친구가 직접 만들어야
+  합니다.)
+
   `
-  > 명령어 의미: checkout -b는 브랜치를 '만들고(-b) 바로 이동(checkout)'하라는 명령어입니다.
-  > 결과: Switched to a new branch 'feature/header' 라는 메시지가 표시됩니다. 이제 당신은 feature/header 라는 새로운 작업 공간에
-  있습니다.
+      NEXT_PUBLIC_SUPABASE_URL=https://<your-project-ref>.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-anon-key>
+      `
+
+  4. 개발 서버 실행 및 확인
+
+  -   모든 설정이 끝났으면, 개발 서버를 실행해서 프로젝트가 잘 뜨는지 확인합니다.
+
+  `bash
+      npm run dev
+      `
+
+
+  이제 친구도 모든 준비를 마쳤습니다. 이제부터 두 분 모두 이전에 배운 Feature Branch 워크플로우(git pull -> git checkout -b ... ->
+  ...)에 따라 안전하게 협업을 진행할 수 있습니다.
+
+
+-------------------------------------------------------------------------------------
+
+
+
+
+  ### 1단계: 작업 시작 전, 둘 다 최신 코드로 동기화하기
+
+
+  두 사람 모두, 작업을 시작하기 직전에 GitHub에 있는 master 브랜치의 최신 내용을 각자의 컴퓨터로 가져와야 합니다.
+
+  > (당신과 친구 둘 다 실행)
+  >
+  `bash
+  > # 1. master 브랜치로 이동
+  > git checkout master
+  >
+  > # 2. GitHub(origin)에서 최신 코드를 가져옴
+  > git pull origin master
+  > `
+  > 이유: 항상 최신 버전의 코드에서 내 작업을 시작해야 나중에 발생할 충돌(Conflict)을 예방할 수 있습니다.
+
+  ---
+
+  ### 2단계: 각자의 작업 공간(Feature Branch) 만들기
+
+
+  이제 각자 맡은 기능에 대한 독립된 브랜치를 만듭니다.
+
+  > (당신이 실행)
+  > `bash
+  > # 'footer' 기능 브랜치를 만들고 이동
+  > git checkout -b feature/footer
+  > `
+
+  > (친구가 실행)
+  >
+  `bash
+  > # 'about-page' 기능 브랜치를 만들고 이동
+  > git checkout -b feature/about-page
+  > `
+  > 결과: 이제 두 사람은 서로에게 전혀 영향을 주지 않는 별도의 공간에서 작업하게 됩니다.
 
   ---
 
 
-  3단계: 코드 작업 및 저장(Commit)
-  1. 코드를 수정합니다. (예: src/components/layout/Header.tsx 파일을 수정)
-
-  2. 내가 수정한 파일들을 '저장할 목록'에 추가합니다 (`add`).
-
-
-  `bash
-  # 모든 수정한 파일을 목록에 추가
-  git add .
-  `
-  > 명령어 의미: . 은 '현재 디렉토리의 모든 변경사항'을 의미합니다. 특정 파일만 추가하고 싶으면 git add 파일이름 형식으로 씁니다. 이걸
-  '스테이징(Staging)'이라고 부릅니다.
+  3단계: 각자 브랜치에서 코드 작업 및 커밋하기
+  > (당신: Footer 작업)
+  > 1.  src/components/layout/Footer.tsx 파일을 열고 코드를 수정합니다.
+  > 2.  작업이 어느 정도 완료되면 커밋합니다.
+  > `bash
+  > git add .
+  > git commit -m "Feat: Footer 레이아웃 구성"
+  > `
 
 
-  3. 목록에 추가된 변경사항들을 하나의 '버전(Commit)'으로 저장합니다.
-  이때, 어떤 작업을 했는지 명확하게 메시지를 남기는 것이 매우 중요합니다.
-
-
-  `bash
-  git commit -m "Feat: 웹사이트 기본 헤더 컴포넌트 추가"
-  `
-  > 명령어 의미: commit은 버전을 만들라는 뜻이고, -m은 커밋 메시지를 함께 기록하겠다는 옵션입니다.
-  > 결과: [feature/header 1234567] Feat: 웹사이트 기본 헤더 컴포넌트 추가 와 같은 메시지가 뜨면서 새로운 버전이 생성됩니다.
-
-
-  팁: "헤더 레이아웃 완성", "로고 이미지 추가", "네비게이션 링크 추가" 처럼 기능을 잘게 쪼개서 여러 번 커밋하면 나중에 추적하기
-  좋습니다.
+  > (친구: About Us 페이지 작업)
+  > 1.  src/app/about/page.tsx 파일을 새로 만들고 내용을 채웁니다.
+  > 2.  작업이 어느 정도 완료되면 커밋합니다.
+  > `bash
+  > git add .
+  > git commit -m "Feat: About Us 페이지 기본 구조 생성"
+  > `
 
   ---
 
-  ### 4단계: 내 작업을 GitHub에 공유하기 (Push)
 
-
-  내 컴퓨터의 feature/header 브랜치에 저장된 작업 내용을 친구도 볼 수 있도록 GitHub 저장소에 올립니다.
-
-
+  4단계: 먼저 끝난 사람이 Pull Request 보내기
   `bash
-  git push origin feature/header
-  `
-  > 명령어 의미: "내 컴퓨터의 feature/header 브랜치를 GitHub 저장소(origin)에 똑같이 올려 줘" 라는 뜻입니다.
-  > 결과: 업로드가 진행되고, 이제 GitHub 웹사이트에 들어가면 내가 올린 feature/header 브랜치를 확인할 수 있습니다.
+  >     git push origin feature/footer
+  >     `
+  > 2.  GitHub 저장소 페이지로 가서, feature/footer 브랜치에 대한 Pull Request(PR)를 생성합니다. (제목, 설명 작성)
 
   ---
 
-  ### 5단계: 합치기 요청 보내기 (Pull Request)
+
+  5단계: 코드 리뷰 및 첫 번째 작업물 병합(Merge)하기
+  > (친구가 할 일)
+  > 1.  당신이 보낸 PR을 GitHub에서 열어봅니다.
+  > 2.  Files changed 탭에서 변경된 코드를 확인하고, 의견이 있으면 댓글을 남깁니다.
+  > 3.  이상이 없으면 `Approve` (승인) 버튼을 눌러줍니다.
+  >
+  > (당신 또는 친구가 할 일)
+  > 1.  PR이 승인되었으면, GitHub에서 `[Merge pull request]` 버튼을 눌러 Footer 코드를 master 브랜치에 최종적으로 합칩니다.
+
+  결과: 이제 GitHub의 master 브랜치에는 당신이 만든 Footer 기능이 포함되었습니다. 하지만 친구의 컴퓨터에는 아직 이 내용이 없습니다.
+
+  ---
 
 
-  이제 내가 만든 헤더를 프로젝트의 원본인 main 브랜치에 합쳐달라고 친구에게 공식적으로 요청할 차례입니다.
+  6단계: 두 번째 사람이 작업 내용 합치기 전, 최신 `master` 내용 반영하기 (매우 중요!)
+  시나리오: 이제 친구가 About Us 페이지 작업을 마치고 PR을 보내려고 합니다. 하지만 그 사이에 `master` 브랜치가 당신의 `Footer` 작업으로 
+  인해 변경되었습니다. 친구는 PR을 보내기 전에 이 최신 master 내용을 자신의 작업 브랜치(feature/about-page)에 먼저 반영해야 합니다.
 
 
-   1. GitHub 저장소 웹사이트에 접속합니다.
-  Pull Request(PR)가 생성되면 친구에게 알림이 갑니다. 이제 친구는 당신의 코드를 보고 의견을 줄 수 있습니다.
+  > (친구가 실행)
+  > 1.  먼저, 자신의 로컬 master 브랜치를 최신 상태로 업데이트합니다.
+  >     `bash
+  >     git checkout master
+  >     git pull origin master
+  >     `
+  > 2.  다시 자신의 작업 브랜치로 돌아옵니다.
+  >
+  `bash
+  >     git checkout feature/about-page
+  >     `
+  > 3.  최신화된 `master` 브랜치의 내용을 내 작업 브랜치로 가져와 합칩니다.
+  >     `bash
+  >     git merge master
+  >     `
+  > 이유: 이 과정을 통해, 친구는 자신의 About Us 페이지와 당신의 Footer 코드가 합쳐졌을 때 충돌이 없는지 미리 자신의 컴퓨터에서
+  확인하고 해결할 수 있습니다.
+
+  ---
+
+  ### 7단계: 두 번째 사람도 Pull Request 보내고 병합하기
 
 
-   - 친구의 역할: PR 페이지의 Files changed 탭에서 변경된 코드를 보며 궁금한 점이나 수정 제안을 댓글로 남깁니다.
-  7단계: 작업 완료 및 병합 (Merge)
-   1. GitHub의 PR 페이지에서 `[Merge pull request]` 버튼을 누릅니다.
-  이제 당신과 친구 모두 1단계로 돌아가 git checkout main -> git pull origin main을 실행해서, 방금 합쳐진 새로운 main 브랜치의 내용을
-  각자 컴퓨터에 내려받습니다.
+  > (친구가 실행)
+  > 1.  이제 최신 내용이 반영된 자신의 브랜치를 GitHub에 올립니다.
+  >     `bash
+  >     git push origin feature/about-page
+  >     `
+  > 2.  GitHub에서 About Us 페이지에 대한 Pull Request를 생성합니다.
+  >
+  > (당신이 할 일)
+  > 1.  친구가 보낸 PR을 리뷰하고 승인합니다.
+  > 2.  GitHub에서 `[Merge pull request]` 버튼을 눌러 master 브랜치에 합칩니다.
+
+  ---
 
 
-  그리고 다음 작업을 위해 또 새로운 브랜치를 만들면서 이 과정을 반복하면 됩니다.
+  8단계: 모두 다시 동기화하고 다음 작업 준비
+  `bash
+  > git checkout master
+  > git pull origin master
+  > `
