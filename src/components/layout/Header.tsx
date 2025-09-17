@@ -1,13 +1,37 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Search, User, ShoppingCart, Menu } from 'lucide-react';
-import SideMenu from './SideMenu'; // Import the SideMenu component
+import SideMenu from './SideMenu'; // Assuming SideMenu is in the same directory
+import { createClient } from '@/utils/supabase/client';
+import { logout } from '@/app/auth/actions';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+      setLoading(false);
+    };
+
+    getUser();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -43,14 +67,30 @@ const Header = () => {
                 검색
               </span>
             </div>
-            <div className="relative group flex items-center">
-              <Link href="/login" className="hover:opacity-75">
-                <User size={22} />
-              </Link>
-              <span className="absolute top-full mt-2 -translate-x-1/2 left-1/2 w-max bg-black text-white text-xs rounded py-1 px-2 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity">
-                마이페이지
-              </span>
-            </div>
+            {!loading && user ? (
+              <>
+                <div className="relative group flex items-center">
+                  <Link href="/mypage" className="hover:opacity-75">
+                    <User size={22} />
+                  </Link>
+                  <span className="absolute top-full mt-2 -translate-x-1/2 left-1/2 w-max bg-black text-white text-xs rounded py-1 px-2 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity">
+                    마이페이지
+                  </span>
+                </div>
+                <form action={logout}>
+                  <button className="hover:opacity-75 text-sm">Logout</button>
+                </form>
+              </>
+            ) : !loading && (
+              <div className="relative group flex items-center">
+                <Link href="/login" className="hover:opacity-75">
+                  <User size={22} />
+                </Link>
+                <span className="absolute top-full mt-2 -translate-x-1/2 left-1/2 w-max bg-black text-white text-xs rounded py-1 px-2 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity">
+                  마이페이지
+                </span>
+              </div>
+            )}
             <div className="relative group flex items-center">
               <Link href="/cart" className="hover:opacity-75">
                 <ShoppingCart size={22} />
@@ -62,7 +102,14 @@ const Header = () => {
           </div>
         </div>
       </header>
-      <SideMenu isOpen={isMenuOpen} onClose={toggleMenu} />
+      <SideMenu isOpen={isMenuOpen} onClose={toggleMenu}>
+        <nav className="flex flex-col space-y-4">
+          <Link href="/products?category=BEST" className="hover:text-gray-500">BEST</Link>
+          <Link href="/products?category=NEW" className="hover:text-gray-500">NEW</Link>
+          <Link href="/products?category=TOP" className="hover:text-gray-500">상의</Link>
+          <Link href="/products?category=BOTTOM" className="hover:text-gray-500">하의</Link>
+        </nav>
+      </SideMenu>
     </>
   );
 };
