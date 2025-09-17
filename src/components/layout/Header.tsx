@@ -44,9 +44,9 @@ const Header = () => {
       >
         <div className="relative flex items-center justify-between h-16">
           {/* Left: Menu Button */}
-          <div className="pl-4 sm:pl-6 lg:pl-8">
-            <button onClick={toggleMenu} className="hover:opacity-75 cursor-pointer">
-              <Menu size={24} />
+          <div className="pl-4 sm:pl-6 lg:pl-8 flex items-center">
+            <button onClick={toggleMenu} className="hover:opacity-75 cursor-pointer p-0">
+              <Menu size={22} />
             </button>
           </div>
 
