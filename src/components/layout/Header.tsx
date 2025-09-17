@@ -87,7 +87,7 @@ const Header = () => {
                   <User size={22} />
                 </Link>
                 <span className="absolute top-full mt-2 -translate-x-1/2 left-1/2 w-max bg-black text-white text-xs rounded py-1 px-2 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity">
-                  로그인
+                  마이페이지
                 </span>
               </div>
             )}
