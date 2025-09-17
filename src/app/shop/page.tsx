@@ -1,3 +1,5 @@
+'use client';
+
 import NewArrivalsSection from '@/components/shop/NewArrivalsSection';
 import BestSellerSection from '@/components/shop/BestSellerSection';
 import ReviewSection from '@/components/shop/ReviewSection';

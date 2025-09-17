@@ -122,3 +122,12 @@
     - "전체상품주문", "선택상품주문" 버튼 추가.
     - "이용안내" 섹션 추가.
 - **새 브랜치 생성:** 장바구니 기능 개발을 위해 `feature/shopping-cart` 브랜치로 전환하여 작업 진행.
+
+#### 4. Supabase 데이터 연동 및 오류 해결
+- **Shop 페이지 상품 데이터 연동:** 'New Arrivals' 및 'Best Seller' 섹션에서 임시 상품 데이터를 제거하고, Supabase의 `products` 테이블에서 실제 상품 데이터를 비동기적으로 가져오도록 구현.
+- **`useEffect` 클라이언트 컴포넌트 오류 해결:** `NewArrivalsSection` 및 `BestSellerSection` 컴포넌트에서 `useEffect` 훅 사용으로 인해 발생한 오류를 해결하기 위해, 부모 컴포넌트인 `src/app/shop/page.tsx` 파일 상단에 `'use client';` 지시어를 추가하여 클라이언트 컴포넌트로 명시.
+- **`products.sales_count` 컬럼 없음 오류 해결:** 'Best Seller' 섹션에서 `products` 테이블에 `sales_count` 컬럼이 존재하지 않아 발생한 오류를 해결하기 위해, 임시적으로 `id` 컬럼을 기준으로 내림차순 정렬하도록 수정. (향후 `sales_count` 컬럼 추가 시 해당 컬럼으로 변경 예정)
+- **영상 관련 코드 및 의존성 정리:**
+    - `next.config.ts`에서 `picsum.photos` 도메인 설정 제거.
+    - `package.json`에서 `react-player` 및 `@headlessui/react` 의존성 제거 후 `npm install`을 통해 관련 패키지 삭제.
+    - `src/components/common/Modal.tsx` 파일 삭제 (더 이상 사용되지 않음).
