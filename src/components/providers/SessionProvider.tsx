@@ -21,18 +21,25 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     const supabase = createClient();
 
     const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-      setUser(session?.user || null);
-      setLoading(false);
+      console.log('SessionProvider: Initial getSession call');
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setSession(session);
+        setUser(session?.user || null);
+      } finally {
+        setLoading(false);
+        console.log('SessionProvider: Initial session loaded', { session, user: session?.user, loading: false });
+      }
     };
 
     getSession();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('SessionProvider: Auth state changed', { event, session, user: session?.user });
       setSession(session);
       setUser(session?.user || null);
       setLoading(false);
+      console.log('SessionProvider: Auth state updated', { session, user: session?.user, loading: false });
     });
 
     return () => {

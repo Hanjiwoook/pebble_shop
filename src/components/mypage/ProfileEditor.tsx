@@ -10,20 +10,29 @@ const ProfileEditor = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      setLoading(true);
-      const { data, error } = await getProfile();
-      if (error) {
-        setError(error.message);
-      } else {
-        setProfile(data);
-      }
-      setLoading(false);
-    };
+  const fetchProfile = async () => {
+    setLoading(true);
+    const { data, error } = await getProfile();
+    if (error) {
+      setError(error.message);
+    } else {
+      setProfile(data);
+    }
+    setLoading(false);
+  };
 
+  useEffect(() => {
     fetchProfile();
   }, []);
+
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => {
+        setSuccess(null);
+      }, 3000); // 3초 후 메시지 사라짐
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -44,6 +53,7 @@ const ProfileEditor = () => {
       setError(error.message);
     } else {
       setSuccess('프로필이 성공적으로 업데이트되었습니다.');
+      fetchProfile(); // Update: Re-fetch profile after successful update
     }
   };
 

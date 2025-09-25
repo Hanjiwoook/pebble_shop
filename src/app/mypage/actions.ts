@@ -25,10 +25,10 @@ export async function getProfile() {
     .from('profiles')
     .select('id, username, full_name, updated_at')
     .eq('id', user.id)
-    .single();
+    .maybeSingle();
     
   // Add email to the profile data
-  const profileData = data ? { ...data, email: user.email } : null;
+  const profileData = data ? { ...data, email: user.email } : { id: user.id, email: user.email, username: null, full_name: null };
 
   return { data: profileData, error };
 }
@@ -53,4 +53,38 @@ export async function updateProfile(profile: Partial<Profile>) {
   }
 
   return { error };
+}
+
+// Get the current user's orders
+export async function getOrders() {
+  const supabase = createClient();
+
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return { data: null, error: { message: 'User not found.' } };
+  }
+
+  const { data: orders, error } = await supabase
+    .from('orders')
+    .select(
+      `
+      id,
+      user_id,
+      total_price,
+      status,
+      create_at,
+      order_items (
+        id,
+        order_id,
+        varnt_id,
+        qutitay,
+        price_at_purchase
+      )
+    `
+    )
+    .eq('user_id', user.id)
+    .order('create_at', { ascending: false });
+
+  return { data: orders, error };
 }

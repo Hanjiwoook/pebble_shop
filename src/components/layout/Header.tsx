@@ -1,37 +1,15 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { Search, User, ShoppingCart, Menu } from 'lucide-react';
-import SideMenu from './SideMenu'; // Assuming SideMenu is in the same directory
-import { createClient } from '@/utils/supabase/client';
-import { logout } from '@/app/auth/actions';
-import type { User as SupabaseUser } from '@supabase/supabase-js';
+import SideMenu from './SideMenu';
+import { useSession } from '../providers/SessionProvider';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user, setUser] = useState<SupabaseUser | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const supabase = createClient();
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-      setLoading(false);
-    };
-
-    getUser();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, []);
+  const { user, loading } = useSession();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
