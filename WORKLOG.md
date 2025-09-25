@@ -131,3 +131,51 @@
     - `next.config.ts`에서 `picsum.photos` 도메인 설정 제거.
     - `package.json`에서 `react-player` 및 `@headlessui/react` 의존성 제거 후 `npm install`을 통해 관련 패키지 삭제.
     - `src/components/common/Modal.tsx` 파일 삭제 (더 이상 사용되지 않음).
+
+---
+
+## 2025년 9월 25일
+
+### ✅ 목표: 비회원/회원 장바구니 기능 구현 및 로그인 시 장바구니 병합
+
+#### 1. 프로젝트 환경 설정 및 브랜치 관리
+- `feature/shopping-cart` 브랜치로 전환하여 작업 진행.
+- `master` 브랜치 최신화 및 `feature/shopping-cart` 브랜치에 `master` 변경사항 rebase (친구의 마이페이지 기능 통합).
+- `DATABASE_SCHEMA.md` 파일 생성 및 업데이트하여 전체 DB 스키마 문서화.
+
+#### 2. 장바구니 페이지 구조 개편
+- `src/app/layout.tsx`: `SessionProvider`를 추가하여 애플리케이션 전역에서 세션 관리가 가능하도록 설정.
+- `src/app/cart/page.tsx`: 사용자 로그인 상태에 따라 `GuestCart` 또는 `MemberCart` 컴포넌트를 조건부 렌더링하도록 구현.
+
+#### 3. 비회원 장바구니 기능 구현
+- `src/components/cart/GuestCart.tsx` 파일 생성: 클라이언트 컴포넌트로, 브라우저 `localStorage`를 사용하여 비회원 장바구니 항목을 관리 (추가, 수량 변경, 삭제, 비우기).
+
+#### 4. 회원 장바구니 기능 구현
+- `src/app/cart/actions.ts` 파일 업데이트:
+    - `getCartItems`, `addToCart`, `updateCartItemQuantity`, `removeCartItem`, `clearUserCart` 등 Supabase DB와 연동되는 서버 액션 구현.
+    - `getDefaultVariantId` 서버 액션 추가: `product_id`를 기반으로 기본 `variant_id`를 조회.
+    - `mergeGuestCart` 서버 액션 추가: 비회원 장바구니 항목을 회원 장바구니로 병합하는 로직 구현.
+- `src/components/cart/MemberCart.tsx` 파일 생성: 서버 컴포넌트로, `getCartItems` 서버 액션을 통해 회원 장바구니 데이터를 가져와 표시하고, 다른 서버 액션들을 통해 장바구니를 관리.
+
+#### 5. '장바구니 담기' 기능 추가
+- `src/components/products/ProductCard.tsx` 파일 수정:
+    - 클라이언트 컴포넌트로 전환.
+    - `getDefaultVariantId`를 통해 상품의 기본 `variant_id`를 가져옴.
+    - '장바구니 담기' 버튼 추가: 비회원일 경우 `localStorage`에, 회원일 경우 `addToCart` 서버 액션을 통해 장바구니에 상품 추가.
+
+#### 6. 로그인 시 장바구니 병합 로직 구현
+- `src/app/login/page.tsx` 파일 수정: 로그인 성공 후 `localStorage`의 비회원 장바구니를 읽어 `mergeGuestCart` 서버 액션을 호출하여 회원 장바구니로 병합하고, `localStorage`를 비우도록 구현.
+
+#### 7. 오류 해결 및 디버깅
+- `src/utils/supabase/server.ts` 파일 수정: `cookies()` 관련 서버 오류 해결 (get 메서드의 `async` 및 `await` 처리).
+- '장바구니 담기' 버튼 비활성화 문제 디버깅을 위해 `ProductCard.tsx` 및 `cart/actions.ts`에 `console.log` 추가. (`product_variants` 테이블 데이터 누락 확인 필요)
+
+## 🚀 다음 작업 계획
+
+
+  1. '장바구니 담기' 버튼 비활성화 문제 해결 (최우선)
+  2. '장바구니 담기' 기능 테스트
+  3. 로그인 시 장바구니 병합 기능 테스트
+  4. 장바구니 관리 기능 개선
+  5. UI/UX 개선 및 추가 기능
+---

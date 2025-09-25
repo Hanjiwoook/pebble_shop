@@ -5,11 +5,22 @@ import { useSearchParams } from 'next/navigation';
 import { login } from '@/app/auth/actions';
 import { createClient } from '@/utils/supabase/client';
 import { Provider } from '@supabase/supabase-js';
+import { mergeGuestCart } from '@/app/cart/actions';
+import { useRouter } from 'next/navigation';
+
+interface GuestCartItem {
+  id: number; // This is product.id from local storage
+  name: string;
+  price: number;
+  quantity: number;
+  imageUrl: string;
+}
 
 export default function LoginPage() {
   const searchParams = useSearchParams();
   const message = searchParams.get('message');
   const error = searchParams.get('error');
+  const router = useRouter();
 
   const supabase = createClient();
 
@@ -20,6 +31,36 @@ export default function LoginPage() {
         redirectTo: `${location.origin}/auth/callback`,
       },
     });
+  };
+
+  const handleLoginSubmit = async (formData: FormData) => {
+    const result = await login(formData); // Call the server action
+
+    // The login server action redirects on success or error, so we won't reach here on direct success/failure.
+    // However, if it returns an error message (e.g., for client-side validation before redirect),
+    // or if we want to handle the redirect client-side after merging.
+
+    // Assuming successful login means no redirect happened from the server action itself
+    // and we are handling the redirect client-side after merging.
+    // If the server action always redirects, this client-side merge logic needs to be in the callback route.
+
+    // For now, let's assume the server action does NOT redirect on success, and we handle it here.
+    // If the server action *does* redirect, this logic needs to be moved to the auth callback route.
+
+    // Check for guest cart and merge
+    const storedCart = localStorage.getItem('guestCart');
+    if (storedCart) {
+      const guestCart: GuestCartItem[] = JSON.parse(storedCart);
+      if (guestCart.length > 0) {
+        console.log('Merging guest cart:', guestCart);
+        await mergeGuestCart(guestCart);
+        localStorage.removeItem('guestCart'); // Clear guest cart after merging
+        console.log('Guest cart merged and cleared.');
+      }
+    }
+
+    // Redirect to home page after successful login and cart merge
+    router.push('/');
   };
 
   return (
@@ -46,7 +87,7 @@ export default function LoginPage() {
           </div>
         )}
 
-        <form className="space-y-6" action={login}>
+        <form className="space-y-6" action={handleLoginSubmit}>
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email address
