@@ -25,7 +25,7 @@ export async function getProfile() {
     .from('profiles')
     .select('id, username, full_name, updated_at')
     .eq('id', user.id)
-    .single();
+    .maybeSingle();
     
   // Add email to the profile data
   const profileData = data ? { ...data, email: user.email } : null;
