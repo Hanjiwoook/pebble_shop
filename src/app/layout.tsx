@@ -5,6 +5,8 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 
+import { SessionProvider } from '@/components/providers/SessionProvider';
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
