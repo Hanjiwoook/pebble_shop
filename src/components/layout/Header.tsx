@@ -77,9 +77,7 @@ const Header = () => {
                     마이페이지
                   </span>
                 </div>
-                <form action={logout}>
-                  <button className="hover:opacity-75 text-sm">Logout</button>
-                </form>
+                
               </>
             ) : !loading && (
               <div className="relative group flex items-center">

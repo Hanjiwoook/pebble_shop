@@ -3,6 +3,9 @@
 
 import Link from 'next/link';
 import { X } from 'lucide-react';
+import { useSession } from '../providers/SessionProvider';
+import { logout } from '@/app/auth/actions';
+import { useRouter } from 'next/navigation';
 
 interface SideMenuProps {
   isOpen: boolean;
@@ -10,6 +13,15 @@ interface SideMenuProps {
 }
 
 const SideMenu = ({ isOpen, onClose }: SideMenuProps) => {
+  const { user } = useSession();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    onClose(); // Close the menu
+    router.push('/'); // Redirect to home
+  };
+
   return (
     <div
       className={`fixed inset-0 z-50 transition-opacity duration-300 ${
@@ -43,6 +55,15 @@ const SideMenu = ({ isOpen, onClose }: SideMenuProps) => {
               <li><Link href="/products?category=BOTTOM" onClick={onClose} className="text-lg hover:text-gray-500">하의</Link></li>
             </ul>
           </nav>
+          <div className="absolute bottom-6 left-6">
+            {user ? (
+              <form action={handleLogout}>
+                <button className="text-lg hover:text-gray-500">Logout</button>
+              </form>
+            ) : (
+              <Link href="/login" onClick={onClose} className="text-lg hover:text-gray-500">Login</Link>
+            )}
+          </div>
         </div>
       </div>
     </div>
